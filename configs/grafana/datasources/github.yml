@@ -1,0 +1,12 @@
+apiVersion: 1
+
+datasources:
+  - name: GitHub
+    type: grafana-github-datasource
+    access: proxy
+    url: https://api.github.com
+    jsonData:
+      defaultOrg: "fredfrazao"  # Replace with your GitHub organization or leave blank
+      cacheTimeout: 60               # Cache duration in seconds
+    secureJsonData:
+      accessToken: "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"

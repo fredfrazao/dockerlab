@@ -1,0 +1,10 @@
+{
+  "service": {
+    "name": "grafana",
+    "port": 3000,
+    "check": {
+      "http": "http://grafana:3000/api/health",
+      "interval": "10s"
+    }
+  }
+}
