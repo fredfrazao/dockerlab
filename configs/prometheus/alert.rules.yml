@@ -1,0 +1,49 @@
+groups:
+  - name: example-alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance) < 0.2
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          description: "CPU usage is above 80% for the last 5 minutes."
+          summary: "High CPU usage on instance {{ $labels.instance }}"
+      - alert: AlwaysFiring
+        expr: vector(1)  # This condition is always true
+        for: 0m  # Trigger immediately
+        labels:
+          severity: critical
+        annotations:
+          description: "This is a test alert that is always firing."
+          summary: "Test Alert: AlwaysFiring"
+  - name: consul_service_alerts
+    rules:
+      - alert: Consul_alertmanager_ServiceDown
+        expr: consul_health_status{service="alertmanager"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Alertmanager service is down!"
+          description: "The Alertmanager service registered in Consul is down."
+  - name: consul_grafana_alerts
+    rules:
+      - alert: consul_grafana_alerts_ServiceDown
+        expr: consul_health_status{service="grafana"} == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "grafana service is down!"
+          description: "The grafana service registered in Consul is down."
+  - name: consul_prometheus_alerts
+    rules:
+      - alert: consul_prometheus_ServiceDown
+        expr: consul_health_status{service="prometheus"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "prometheus service is down!"
+          description: "The prometheus service registered in Consul is down."

@@ -1,0 +1,10 @@
+{
+  "service": {
+    "name": "alertmanager",
+    "port": 9093,
+    "check": {
+      "http": "http://alertmanager:9093/-/ready",
+      "interval": "10s"
+    }
+  }
+}

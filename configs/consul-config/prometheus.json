@@ -1,0 +1,10 @@
+{
+  "service": {
+    "name": "prometheus",
+    "port": 9090,
+    "check": {
+      "http": "http://prometheus:9090/-/healthy",
+      "interval": "10s"
+    }
+  }
+}

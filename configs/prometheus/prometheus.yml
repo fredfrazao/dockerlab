@@ -1,0 +1,74 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['host.docker.internal:9100']
+
+
+  - job_name: 'consul_services_alertmanager'
+    consul_sd_configs:
+      - server: 'consul:8500'
+    relabel_configs:
+      - source_labels: [__meta_consul_service]
+        target_label: instance
+        regex: "alertmanager"  # Only apply this relabeling if the service name is "alertmanager"
+      - source_labels: [__meta_consul_service]
+        target_label: __address__
+        replacement: 'alertmanager:9093'  # Alertmanager port
+      - source_labels: [__meta_consul_service]
+        target_label: job
+        replacement: 'consul_services_alertmanager'  # Set the job label dynamically
+
+  - job_name: 'consul_services_grafana'
+    consul_sd_configs:
+      - server: 'consul:8500'
+    relabel_configs:
+      - source_labels: [__meta_consul_service]
+        target_label: instance
+        regex: "grafana"  # Only apply this relabeling if the service name is "grafana"
+      - source_labels: [__meta_consul_service]
+        target_label: __address__
+        replacement: 'grafana:3000'  # grafana port
+      - source_labels: [__meta_consul_service]
+        target_label: job
+        replacement: 'consul_services_grafana'  # Set the job label dynamically
+
+  - job_name: 'consul_services_prometheus'
+    consul_sd_configs:
+      - server: 'consul:8500'
+    relabel_configs:
+      - source_labels: [__meta_consul_service]
+        target_label: instance
+        regex: "grafana"  # Only apply this relabeling if the service name is "prometheus"
+      - source_labels: [__meta_consul_service]
+        target_label: __address__
+        replacement: 'prometheus:9090'  # prometheus port
+      - source_labels: [__meta_consul_service]
+        target_label: job
+        replacement: 'consul_services_prometheus'  # Set the job label dynamically
+
+  - job_name: 'consul_metrics'
+    static_configs:
+      - targets: ['localhost:8500']  # Replace with the correct address if necessary
+    metrics_path: '/v1/agent/metrics'  # This is the path for Consul's metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - source_labels: [__meta_consul_service]
+        target_label: job
+        replacement: 'consul_metrics'
+
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+rule_files:
+  - '/etc/prometheus/alert.rules.yml'
