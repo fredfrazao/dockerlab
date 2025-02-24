@@ -12,5 +12,5 @@ receivers:
   - name: 'slack'
     slack_configs:
       - send_resolved: true
-        channel: '#ssss'  # Replace with your Slack channel
+        channel: '#xxx'  # Replace with your Slack channel
         api_url: 'https://hooks.slack.com/services/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'  # Replace with your Slack Incoming Webhook URL
