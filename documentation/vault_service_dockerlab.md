@@ -54,10 +54,10 @@ In this setup, Vault uses Consul as its storage backend. Consul ensures that Vau
 The storage backend configuration is specified as:
 
 ```yaml
-VAULT_STORAGE_CONSUL_ADDRESS=consul-1:8500
+VAULT_STORAGE_CONSUL_ADDRESS=consul:8500
 ```
 
-This instructs Vault to use the Consul agent running on `consul-1` (on port `8500`) as the backend for storing secrets and other data.
+This instructs Vault to use the Consul agent running on `consul` (on port `8500`) as the backend for storing secrets and other data.
 
 ---
 
