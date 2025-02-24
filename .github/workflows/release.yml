@@ -18,7 +18,7 @@ permissions:
 jobs:
   create-release:
     runs-on: ubuntu-latest
-    if: github.actor == 'ffrazao'
+    if: github.actor == 'fredfrazao'
 
     steps:
     - name: Checkout repository
