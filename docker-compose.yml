@@ -14,7 +14,6 @@ services:
     networks:
       - dockerlab
 
-
   vault:
     image: hashicorp/vault:latest
     container_name: vault
@@ -85,6 +84,57 @@ services:
     networks:
       - dockerlab
 
+  fluentbit:
+    image: fluent/fluent-bit:1.8.3
+    container_name: fluentbit
+    platform: linux/arm64/v8
+    environment:
+      - FLUENT_ELASTICSEARCH_HOST=elasticsearch:9200
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./configs/fluentbit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    networks:
+      - dockerlab
+
+  # Filebeat for log shipping
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.0.0
+    container_name: filebeat
+    platform: linux/arm64/v8  # Specify ARM64 platform
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch:9200
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./configs/fluentbit/fluent-bit.conf:/usr/share/filebeat/fluent-bit.conf
+    networks:
+      - dockerlab
+
+  # Elasticsearch for storing logs
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=changeme
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - dockerlab
+
+  # Kibana for visualizing logs
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.16.0
+    container_name: kibana
+    platform: linux/arm64/v8  # Specify ARM64 platform
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - dockerlab
+
 networks:
   dockerlab:
     driver: bridge
@@ -95,3 +145,4 @@ volumes:
   consul_data:
   vault_data:
   postgres_data:
+  es_data:
