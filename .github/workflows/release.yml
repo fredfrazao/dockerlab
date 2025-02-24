@@ -8,7 +8,10 @@ on:
         description: 'Version number for the release'
         required: true
         type: string
-
+      changelog:
+        description: 'Changelog for the release'
+        required: true
+        type: string
 
 jobs:
   create-release:
@@ -33,9 +36,10 @@ jobs:
 
     # Create GitHub release
     - name: Create GitHub release
-      uses: gh-cli/gh-release-action@v1
+      uses: softprops/action-gh-release@v1
       with:
         tag_name: "v${{ inputs.version }}"
         release_name: "Release v${{ inputs.version }}"
+        body: ${{ inputs.changelog }}
         draft: false
         prerelease: false
