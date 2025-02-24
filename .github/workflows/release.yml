@@ -1,5 +1,6 @@
 name: Create Release
 
+# Trigger the workflow manually via the UI or API
 on:
   workflow_dispatch:
     inputs:
@@ -12,25 +13,32 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write  # Allow the token to write (push) to the repository
+
 jobs:
   create-release:
     runs-on: ubuntu-latest
 
     steps:
+    # Checkout the repository to work with the code
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    # Set up Git configuration for the release process
     - name: Set up Git
       run: |
         git config user.name "GitHub Actions"
         git config user.email "actions@github.com"
-        git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
+    # Create a new Git tag for the release
     - name: Create release tag
       run: |
         git tag "v${{ inputs.version }}"
         git push origin "v${{ inputs.version }}"
 
+    # Create GitHub release
     - name: Create GitHub release
       uses: softprops/action-gh-release@v1
       with:
